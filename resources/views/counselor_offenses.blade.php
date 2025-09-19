@@ -1,10 +1,10 @@
-@extends('clean')
+@extends('layoutc')
 
 @section('page-title', 'Student Offenses')
 
 @section('content')
 <style>
-    /* ===== Google Classroom Inspired Design ===== */
+    /* ===== White + Light Pink Theme ===== */
     body {
         background-color: #f8f9fb;
         font-family: 'Roboto', sans-serif;
@@ -19,12 +19,13 @@
         display: flex;
         justify-content: space-between;
         align-items: center;
+        border-left: 5px solid #f8bbd0;
     }
 
     .header-container h2 {
         font-weight: 700;
         font-size: 1.6rem;
-        color: #202124;
+        color: #c2185b;
         margin: 0;
     }
 
@@ -37,15 +38,16 @@
     .search-box input {
         padding: 10px 15px 10px 40px;
         border-radius: 50px;
-        border: 1px solid #ddd;
+        border: 1px solid #f8bbd0;
         width: 100%;
-        box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
+        box-shadow: 0 1px 4px rgba(248, 187, 208, 0.6);
         transition: 0.3s;
+        background-color: #fff;
     }
 
     .search-box input:focus {
-        border-color: #4285f4;
-        box-shadow: 0 2px 8px rgba(66, 133, 244, 0.2);
+        border-color: #f48fb1;
+        box-shadow: 0 2px 8px rgba(248, 187, 208, 0.8);
         outline: none;
     }
 
@@ -54,26 +56,27 @@
         top: 50%;
         left: 12px;
         transform: translateY(-50%);
-        color: #888;
+        color: #c2185b;
     }
 
     /* Cards */
     .card {
         border: none;
         border-radius: 12px;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+        box-shadow: 0 4px 12px rgba(248, 187, 208, 0.4);
         transition: transform 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
         background-color: #fff;
+        border-top: 4px solid #f8bbd0;
     }
 
     .card:hover {
         transform: translateY(-4px);
-        box-shadow: 0 8px 18px rgba(0, 0, 0, 0.12);
+        box-shadow: 0 8px 18px rgba(248, 187, 208, 0.6);
     }
 
     .card-title {
         font-weight: 600;
-        color: #202124;
+        color: #d63384;
     }
 
     /* Buttons */
@@ -89,8 +92,45 @@
         transform: scale(1.03);
     }
 
-    .btn-outline-primary {
-        border-radius: 50px;
+    .btn-primary {
+        background-color: #f8bbd0;
+        border: none;
+        color: #3c4043;
+    }
+
+    .btn-primary:hover {
+        background-color: #f48fb1;
+        color: #fff;
+    }
+
+    .btn-warning {
+        background-color: #fce4ec;
+        border: none;
+        color: #880e4f;
+    }
+
+    .btn-warning:hover {
+        background-color: #f8bbd0;
+        color: #fff;
+    }
+
+    .btn-danger {
+        background-color: #f48fb1;
+        border: none;
+        color: #fff;
+    }
+
+    .btn-danger:hover {
+        background-color: #ec407a;
+    }
+
+    /* Badges */
+    .badge-offense {
+        background-color: #fce4ec;
+        color: #c2185b;
+        font-weight: 500;
+        border-radius: 12px;
+        padding: 5px 10px;
     }
 
     /* Empty State */
@@ -98,8 +138,9 @@
         background: #fff;
         padding: 40px;
         border-radius: 12px;
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        box-shadow: 0 2px 8px rgba(248, 187, 208, 0.4);
         font-size: 1.1rem;
+        border-left: 5px solid #f8bbd0;
     }
 </style>
 
@@ -107,9 +148,6 @@
 
     <!-- Header + Buttons -->
     <div class="header-container mb-4">
-        <a href="{{ url('/counselor/dashboard') }}" class="btn btn-outline-primary btn-custom shadow-sm">
-            <i class="bi bi-arrow-left-circle"></i> Back
-        </a>
         <h2>📋 Student Offenses</h2>
         <a href="{{ route('counselor.offenses.create') }}" class="btn btn-primary btn-custom shadow-sm">
             <i class="bi bi-plus-circle"></i> Add Offense
@@ -118,7 +156,8 @@
 
     {{-- Flash Message --}}
     @if(session('success'))
-        <div class="alert alert-success alert-dismissible fade show mt-3 shadow-sm" role="alert">
+        <div class="alert alert-success alert-dismissible fade show mt-3 shadow-sm" 
+             role="alert" style="border-left:4px solid #f8bbd0;">
             {{ session('success') }}
             <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
         </div>
@@ -138,7 +177,7 @@
                     <div class="card-body d-flex flex-column">
                         <h5 class="card-title">{{ $offense->student->name ?? 'N/A' }}</h5>
                         <p class="card-text mb-1">
-                            <span class="badge bg-danger">{{ $offense->offense }}</span>
+                            <span class="badge-offense">{{ $offense->offense }}</span>
                         </p>
                         <p class="text-muted mb-2">{{ $offense->remarks ?? '-' }}</p>
                         <small class="text-muted">Date: {{ \Carbon\Carbon::parse($offense->date)->format('M d, Y') }}</small>

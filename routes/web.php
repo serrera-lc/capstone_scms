@@ -11,6 +11,10 @@ use App\Http\Controllers\CounselorDashboardController;
 use App\Http\Controllers\CounselorOffenseController;
 use App\Http\Controllers\StudentDashboardController;
 use App\Http\Controllers\AdminDashboardController;
+use App\Http\Controllers\CounselorReportController;
+use App\Http\Controllers\CounselorNotificationController;
+use App\Http\Controllers\CounselorAuditController;
+use App\Http\Controllers\StudentController;
 use App\Http\Controllers\{
     AuthController,
     AppointmentController,
@@ -64,13 +68,9 @@ Route::put('/admin_users/{user}', [UserController::class, 'update'])->name('admi
 Route::delete('/admin_users/{user}', [UserController::class, 'destroy'])->name('admin.users.destroy');
 
 // ✅ Admin Appointments → http://127.0.0.1:8000/admin_appointments
-Route::get('/admin_appointments', function () {
-    if (!auth()->check() || auth()->user()->role !== 'admin') {
-        abort(403);
-    }
-    $appointments = \App\Models\Appointment::with('student', 'counselor')->latest()->get();
-    return view('admin_appointments', compact('appointments'));
-})->name('admin.appointments');
+// Admin Appointments → now handled by controller
+Route::get('/admin_appointments', [AppointmentController::class, 'index'])
+    ->name('admin.appointments');
 
 Route::patch('/admin_appointments/{appointment}/status', function (Request $request, \App\Models\Appointment $appointment) {
     if (!auth()->check() || auth()->user()->role !== 'admin') {
@@ -213,4 +213,50 @@ Route::prefix('admin')->name('admin.')->group(function () {
     Route::delete('appointments/{appointment}', [App\Http\Controllers\AppointmentController::class, 'destroy'])->name('appointments.destroy');
 });
 
+Route::post('/admin_users/import', [UserController::class, 'import'])->name('admin.users.import');
 
+Route::resource('appointments', AppointmentController::class);
+
+
+Route::get('/admin_reports', [ReportController::class, 'index'])->name('admin.reports');
+Route::put('/admin_reports/{id}', [ReportController::class, 'update'])->name('admin.reports.update');
+Route::delete('/admin_reports/{id}', [ReportController::class, 'destroy'])->name('admin.reports.destroy');
+
+Route::prefix('counselor')->group(function () {
+    // Dashboard
+    Route::get('/dashboard', [CounselorDashboardController::class, 'index'])
+        ->name('counselor.dashboard');
+
+    // Sessions
+    Route::get('/sessions', [CounselingSessionController::class, 'index'])
+        ->name('counselor.sessions');
+
+    // Appointments
+    Route::get('/appointments', [AppointmentController::class, 'index'])
+        ->name('counselor.appointments');
+
+    // Offenses
+    Route::get('/offenses', [CounselorOffenseController::class, 'index'])
+        ->name('counselor.offenses');
+
+    // ✅ New Pages
+    Route::view('/reports', 'counselor_reports')->name('counselor.reports');
+    Route::view('/notifications', 'counselor_notifications')->name('counselor.notifications');
+    Route::view('/audit', 'counselor_audit')->name('counselor.audit');
+});
+Route::prefix('counselor')->group(function () {
+    Route::get('/reports', [CounselorReportController::class, 'index'])->name('counselor.reports');
+    Route::get('/notifications', [CounselorNotificationController::class, 'index'])->name('counselor.notifications');
+    Route::get('/audit', [CounselorAuditController::class, 'index'])->name('counselor.audit');
+});
+
+Route::get('/student/profile', [StudentController::class, 'profile'])->name('student.profile');
+
+Route::get('/student_feedback', [FeedbackController::class, 'index'])->name('student.feedback');
+Route::post('/student_feedback', [FeedbackController::class, 'store'])->name('feedback.store');
+
+
+Route::patch('/admin/users/{user}/toggle-status', [UserController::class, 'toggleStatus'])->name('admin.users.toggleStatus');
+
+Route::patch('/admin/users/{user}/toggle', [UserController::class, 'toggleStatus'])
+    ->name('admin.users.toggle');

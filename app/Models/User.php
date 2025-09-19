@@ -10,8 +10,18 @@ class User extends Authenticatable
 {
     use HasFactory, Notifiable;
 
-    protected $fillable = ['name','email','password','role'];
+    // Add `status` so it can be mass assigned
+    protected $fillable = [
+        'name',
+        'email',
+        'password',
+        'role',
+        'grade_level',
+        'strand',
+        'status', // <-- NEW
+    ];
 
+    // Relationships
     public function appointments()
     {
         return $this->hasMany(Appointment::class, 'student_id');
@@ -35,5 +45,16 @@ class User extends Authenticatable
     public function logs()
     {
         return $this->hasMany(Log::class);
+    }
+
+    public function notifications()
+    {
+        return $this->hasMany(Notification::class, 'user_id');
+    }
+
+    // ✅ Helper method to check if user is active
+    public function isActive()
+    {
+        return $this->status === 'active';
     }
 }

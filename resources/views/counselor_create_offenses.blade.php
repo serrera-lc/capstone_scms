@@ -1,4 +1,4 @@
-@extends('clean')
+@extends('layoutc')
 
 @section('page-title', 'Add Student Offense')
 
@@ -88,9 +88,9 @@
 
     <!-- Header Section -->
     <div class="page-header mb-4">
-        <a href="{{ route('counselor.offenses') }}" class="btn btn-outline-primary btn-custom shadow-sm">
-            <i class="bi bi-arrow-left-circle"></i> Back
-        </a>
+         <h2 class="fw-bold" style="color: #d63384;">
+            <i class="bi bi-journal-text"></i> Counseling Sessions
+        </h2>
         <h3>📝 Add New Student Offense</h3>
         <span></span> <!-- For balanced spacing -->
     </div>

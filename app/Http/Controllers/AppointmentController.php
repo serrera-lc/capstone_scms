@@ -12,30 +12,38 @@ use App\Mail\AppointmentNotification; // <-- Add this
 class AppointmentController extends Controller
 {
     public function index()
-    {
-        $user = Auth::user();
+{
+    $user = Auth::user();
 
-        if ($user->role === 'student') {
-            $appointments = Appointment::with('counselor')
-                ->where('student_id', $user->id)
-                ->latest()
-                ->get();
-            $view = 'student_appointments'; 
-        } elseif ($user->role === 'counselor') {
-            $appointments = Appointment::with('student')
-                ->where('counselor_id', $user->id)
-                ->latest()
-                ->get();
-            $view = 'counselor_appointments'; 
-        } else {
-            $appointments = Appointment::with(['student', 'counselor'])
-                ->latest()
-                ->get();
-            $view = 'admin_appointments'; 
-        }
+    if ($user->role === 'student') {
+        $appointments = Appointment::with('counselor')
+            ->where('student_id', $user->id)
+            ->latest()
+            ->get();
+        $view = 'student_appointments'; 
 
         return view($view, compact('appointments'));
+
+    } elseif ($user->role === 'counselor') {
+        $appointments = Appointment::with('student')
+            ->where('counselor_id', $user->id)
+            ->latest()
+            ->get();
+        $view = 'counselor_appointments'; 
+
+        return view($view, compact('appointments'));
+
+    } else {
+        $appointments = Appointment::with(['student', 'counselor'])
+            ->latest()
+            ->get();
+        $counselors = User::where('role', 'counselor')->get(); // <-- ADD THIS
+        $view = 'admin_appointments'; 
+
+        return view($view, compact('appointments', 'counselors')); // <-- PASS IT
     }
+}
+
 
     // Show appointment form
     public function create()

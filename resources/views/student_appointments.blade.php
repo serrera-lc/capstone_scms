@@ -1,16 +1,16 @@
-@extends('clean')
+@extends('layouts')
 
 @section('content')
 <div class="container mt-4" style="max-width: 950px;">
 
     {{-- Header --}}
     <div class="d-flex justify-content-between align-items-center mb-4 p-3 bg-white rounded-4 shadow-sm border-0">
-        <h3 class="fw-bold mb-0" style="color: #1a73e8; font-size: 1.5rem;">
-            📅 My Appointments
+        <h3 class="fw-bold mb-0" style="color: #d63384; font-size: 1.5rem;">
+            My Appointments
         </h3>
         <a href="{{ route('student.dashboard') }}" 
            class="btn btn-light shadow-sm rounded-pill px-3 py-2 d-flex align-items-center gap-2"
-           style="font-weight: 500; border: 1px solid #e0e0e0;">
+           style="font-weight: 500; border: 1px solid #f8bbd0; color: #d63384;">
             <i class="bi bi-arrow-left-circle"></i> Back to Dashboard
         </a>
     </div>
@@ -18,8 +18,8 @@
     {{-- New Appointment Button --}}
     <div class="mb-4 text-end">
         <a href="{{ route('student.appointment_form') }}" 
-           class="btn btn-primary rounded-pill shadow-sm px-4 py-2"
-           style="background-color: #1a73e8; border-color: #1a73e8; font-weight: 600;">
+           class="btn btn-pink rounded-pill shadow-sm px-4 py-2"
+           style="background-color: #d63384; border-color: #d63384; font-weight: 600; color: white;">
             <i class="bi bi-calendar-plus"></i> Request New Appointment
         </a>
     </div>
@@ -27,7 +27,7 @@
     {{-- Flash Message --}}
     @if(session('success'))
         <div class="alert alert-success alert-dismissible fade show shadow-sm rounded-3 border-0" 
-             role="alert" style="background-color: #e6f4ea; color: #1e4620; font-weight: 500;">
+             role="alert" style="background-color: #fde6ec; color: #880e4f; font-weight: 500;">
             {{ session('success') }}
             <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
         </div>
@@ -38,7 +38,7 @@
         <div class="card-body p-0">
             <div class="table-responsive">
                 <table class="table align-middle mb-0 text-center table-hover" style="border-radius: 12px; overflow: hidden;">
-                    <thead style="background-color: #1a73e8; color: white;">
+                    <thead style="background-color: #f8bbd0; color: white;">
                         <tr>
                             <th>Date</th>
                             <th>Time</th>
@@ -58,7 +58,7 @@
                                         style="
                                             background-color: 
                                             @if($appointment->status === 'Approved') #34a853;
-                                            @elseif($appointment->status === 'Pending') #fbbc05;
+                                            @elseif($appointment->status === 'Pending') #f8bbd0;
                                             @else #9e9e9e;
                                             @endif
                                             ; color: white;
@@ -77,7 +77,7 @@
                                             @csrf
                                             @method('DELETE')
                                             <button class="btn btn-sm rounded-pill shadow-sm"
-                                                    style="color: #dc3545; border: 1px solid #dc3545; background-color: white; transition: 0.3s;">
+                                                    style="color: #d63384; border: 1px solid #d63384; background-color: white; transition: 0.3s;">
                                                 <i class="bi bi-x-circle"></i> Cancel
                                             </button>
                                         </form>
@@ -101,10 +101,10 @@
 
 </div>
 
-{{-- Google Classroom-Inspired Styles --}}
+{{-- Light Pink + White Styles --}}
 <style>
     body {
-        background-color: #f8f9fa;
+        background-color: #fff0f6;
         font-family: 'Roboto', sans-serif;
     }
 
@@ -113,7 +113,7 @@
     }
 
     .table-hover tbody tr:hover {
-        background-color: #f2f7ff !important;
+        background-color: #fde6ec !important;
     }
 
     .card {
@@ -133,16 +133,18 @@
         font-size: 0.95rem;
     }
 
-    .btn-primary:hover {
-        background-color: #155ab6 !important;
-        border-color: #155ab6 !important;
+    .btn-pink:hover {
+        background-color: #b71c4a !important;
+        border-color: #b71c4a !important;
         transform: scale(1.03);
         transition: 0.2s;
+        color: white;
     }
 
     .btn-light:hover {
-        background-color: #f1f3f4 !important;
-        border-color: #e0e0e0;
+        background-color: #fff0f6 !important;
+        border-color: #f8bbd0;
+        color: #d63384;
     }
 
     .shadow-sm {

@@ -4,51 +4,49 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Feedback;
-use App\Models\User; // counselors & students
-use Illuminate\Support\Facades\Auth;
 
 class FeedbackController extends Controller
 {
-    // ===================== STUDENT VIEW =====================
+    // Student Feedback Form
     public function index()
     {
-        // Get all counselors (role = 'counselor')
-        $counselors = User::where('role', 'counselor')->get();
-
-        // Get feedbacks for logged-in student
-        $feedbacks = Feedback::where('student_id', Auth::id())
-            ->latest()
-            ->get();
-
-        return view('student_feedback', compact('feedbacks', 'counselors'));
+        return view('student_feedback');
     }
 
+    // Store Student Feedback
     public function store(Request $request)
     {
-        $request->validate([
-            'feedback'     => 'required|string|max:500',
-            'counselor_id' => 'required|exists:users,id', // select a counselor
-            'rating'       => 'required|integer|min:1|max:5', // must rate 1-5
+        // validate inputs
+        $validated = $request->validate([
+            'name' => 'required|string|max:255',
+            'course_year' => 'required|string|max:255',
+            'counselor' => 'required|string|max:255',
+            'purpose' => 'array',
+            'like' => 'nullable|string',
+            'suggestions' => 'nullable|string',
         ]);
 
+        // save to DB
         Feedback::create([
-            'student_id'   => Auth::id(),
-            'counselor_id' => $request->counselor_id,
-            'feedback'     => $request->feedback,
-            'rating'       => $request->rating,
+            'student_id' => auth()->id(),
+            'name' => $validated['name'],
+            'course_year' => $validated['course_year'],
+            'counselor' => $validated['counselor'],
+            'purpose' => $validated['purpose'] ?? [],
+            'like' => $validated['like'] ?? null,
+            'suggestions' => $validated['suggestions'] ?? null,
         ]);
 
-        return redirect()->back()->with('success', 'Thank you! Your feedback has been submitted.');
+        return redirect()->route('student.feedback')->with('success', 'Feedback submitted successfully!');
     }
 
-    // ===================== ADMIN VIEW =====================
+    // ✅ New: Admin Feedback Listing
     public function adminIndex()
     {
-        // Admin sees all feedbacks with student & counselor info
-        $feedbacks = Feedback::with(['student', 'counselor'])
-            ->latest()
-            ->get();
+        // Get all feedbacks (latest first)
+        $feedbacks = Feedback::latest()->paginate(10); // with pagination
 
-        return view('admin_feedbacks', compact('feedbacks'));
+        // Pass to admin_feedback.blade.php
+        return view('admin_feedback', compact('feedbacks'));
     }
 }

@@ -3,25 +3,19 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>@yield('page-title', 'Admin Dashboard') - SCMS</title>
+    <title>@yield('page-title', 'Counselor Dashboard - SCMS')</title>
 
-    <!-- Bootstrap & Icons -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
 
-    <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
-
     <style>
         body {
-            font-family: 'Roboto', sans-serif;
+            font-family: 'Segoe UI', sans-serif;
             background: #fdfdfd;
-            margin: 0;
         }
-
         /* Top Navbar */
         .top-navbar {
-            background: #f8bbd0;
+            background: #f8bbd0; /* light pink */
             padding: 15px 25px;
             display: flex;
             justify-content: space-between;
@@ -32,7 +26,6 @@
             z-index: 1000;
             color: #880e4f;
         }
-
         .top-navbar h4 {
             font-weight: 700;
             color: #880e4f;
@@ -46,14 +39,12 @@
             padding: 20px 15px;
             height: calc(100vh - 70px);
             position: fixed;
-            top: 70px;
-            left: 0;
+            top: 70px; left: 0;
             border-right: 1px solid #f8bbd0;
             display: flex;
             flex-direction: column;
-            transition: all 0.3s ease;
+            transition: .3s;
         }
-
         .sidebar h4 {
             font-size: 18px;
             font-weight: 700;
@@ -61,7 +52,6 @@
             color: #d63384;
             text-align: center;
         }
-
         .sidebar .nav-link {
             color: #555;
             padding: 12px 15px;
@@ -70,42 +60,31 @@
             display: flex;
             align-items: center;
             gap: 10px;
+            transition: .3s;
             margin-bottom: 10px;
-            transition: 0.3s;
         }
-
         .sidebar .nav-link:hover,
         .sidebar .nav-link.active {
             background-color: #f8bbd0;
             color: #880e4f;
             font-weight: 600;
         }
-
-        .sidebar.collapsed {
-            width: 70px;
-        }
-        .sidebar.collapsed .nav-link span {
-            display: none;
-        }
+        .sidebar.collapsed { width: 70px; overflow: hidden; }
+        .sidebar.collapsed h4,
+        .sidebar.collapsed .nav-link span { display: none; }
 
         /* Main Content */
         .content {
             margin-left: 240px;
             padding: 100px 25px 40px;
-            transition: margin-left 0.3s ease;
+            transition: margin-left .3s;
         }
-        .content.expanded { margin-left: 70px; }
+        .content.expanded { margin-left: 70px !important; }
 
-        @media (max-width: 768px) {
-            .sidebar { transform: translateX(-100%); }
-            .sidebar.active { transform: translateX(0); }
-            .content { margin-left: 0 !important; padding: 100px 15px; }
-        }
-
-        /* Cards */
+        /* Card Styling */
         .card {
-            border-radius: 16px;
             border: none;
+            border-radius: 16px;
         }
         .card-header {
             background: #fff;
@@ -118,9 +97,13 @@
             padding: 6px 12px;
             font-size: 13px;
         }
-    </style>
 
-    @stack('styles')
+        @media (max-width: 768px) {
+            .sidebar { transform: translateX(-100%); }
+            .sidebar.active { transform: translateX(0); }
+            .content { margin-left: 0 !important; padding: 100px 15px; }
+        }
+    </style>
 </head>
 <body>
 
@@ -129,82 +112,81 @@
         <button class="btn btn-light border rounded-circle me-3" id="sidebarToggle">
             <i class="bi bi-list fs-4"></i>
         </button>
-        <h4>@yield('page-title', 'Admin Dashboard')</h4>
+        <h4>@yield('page-title', 'Counselor Dashboard')</h4>
         <button type="button" class="btn btn-light border rounded-pill px-3 shadow-sm" data-bs-toggle="modal" data-bs-target="#logoutModal">
             👋 Welcome, {{ auth()->user()->name }}
         </button>
-    </div>
-
-    <!-- Sidebar -->
-    <div class="sidebar" id="sidebar">
-       <div class="text-center mb-4">
-        <img src="{{ asset('images/lcguidancelogo.jpg') }}" alt="SCMS Logo" class="img-fluid" style="max-height: 60px;">
-    </div>
-        <a href="{{ url('/admin_dashboard') }}" class="nav-link {{ request()->is('admin_dashboard') ? 'active' : '' }}">
-            <i class="bi bi-speedometer2"></i> <span>Dashboard</span>
-        </a>
-        <a href="{{ url('/admin_users') }}" class="nav-link {{ request()->is('admin_users*') ? 'active' : '' }}">
-            <i class="bi bi-people"></i> <span>Manage Users</span>
-        </a>
-        <a href="{{ route('admin.appointments') }}" class="nav-link {{ request()->is('admin/appointments*') ? 'active' : '' }}">
-            <i class="bi bi-calendar-check"></i> <span>Appointments</span>
-        </a>
-        <a href="{{ url('/admin_reports') }}" class="nav-link {{ request()->is('admin_reports*') ? 'active' : '' }}">
-            <i class="bi bi-file-earmark-text"></i> <span>Reports</span>
-        </a>
-        <a href="{{ route('admin.feedbacks') }}" class="nav-link {{ request()->is('admin_feedbacks*') ? 'active' : '' }}">
-            <i class="bi bi-chat-dots"></i> <span>Feedbacks</span>
-        </a>
-        <a href="{{ url('/admin_analytics') }}" class="nav-link {{ request()->is('admin_analytics*') ? 'active' : '' }}">
-            <i class="bi bi-bar-chart"></i> <span>Analytics</span>
-        </a>
-    </div>
-
-    <!-- Main Content -->
-    <div class="content" id="content">
-        @yield('content')
     </div>
 
     <!-- Logout Modal -->
     <div class="modal fade" id="logoutModal" tabindex="-1">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content rounded-4 shadow-lg">
-                <div class="modal-header bg-primary text-white">
-                    <h5 class="modal-title fw-bold">Confirm Logout</h5>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                <div class="modal-header bg-light text-dark">
+                    <h5 class="modal-title">Confirm Logout</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body text-center">
-                    <p class="fs-5 mb-3">Are you sure you want to log out, <strong>{{ auth()->user()->name }}</strong>?</p>
+                    <p>Are you sure you want to log out, <strong>{{ auth()->user()->name }}</strong>?</p>
                     <i class="bi bi-box-arrow-right text-danger" style="font-size: 45px;"></i>
                 </div>
-                <div class="modal-footer d-flex justify-content-between">
+                <div class="modal-footer justify-content-between">
                     <button type="button" class="btn btn-secondary px-4" data-bs-dismiss="modal">Close</button>
                     <form action="{{ route('logout') }}" method="POST">
                         @csrf
-                        <button type="submit" class="btn btn-danger px-4"><i class="bi bi-box-arrow-right"></i> Log Out</button>
+                        <button type="submit" class="btn btn-danger px-4">
+                            <i class="bi bi-box-arrow-right"></i> Log Out
+                        </button>
                     </form>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Scripts -->
+   <!-- Sidebar -->
+    <div class="sidebar" id="sidebar">
+        <h4>SCMS</h4>
+        <a href="{{ route('counselor.dashboard') }}" class="nav-link {{ request()->routeIs('counselor.dashboard') ? 'active' : '' }}">
+            <i class="bi bi-speedometer2"></i> <span>Dashboard</span>
+        </a>
+        <a href="{{ route('counselor.sessions') }}" class="nav-link {{ request()->routeIs('counselor.sessions*') ? 'active' : '' }}">
+            <i class="bi bi-chat-dots"></i> <span>Sessions</span>
+        </a>
+        <a href="{{ route('counselor.appointments') }}" class="nav-link {{ request()->routeIs('counselor.appointments*') ? 'active' : '' }}">
+            <i class="bi bi-calendar-check"></i> <span>Appointments</span>
+        </a>
+        <a href="{{ route('counselor.offenses') }}" class="nav-link {{ request()->routeIs('counselor.offenses*') ? 'active' : '' }}">
+            <i class="bi bi-exclamation-triangle"></i> <span>Offenses</span>
+        </a>
+        <a href="{{ route('counselor.reports') }}" class="nav-link {{ request()->routeIs('counselor.reports*') ? 'active' : '' }}">
+            <i class="bi bi-bar-chart"></i> <span>Reports</span>
+        </a>
+        <a href="{{ route('counselor.notifications') }}" class="nav-link {{ request()->routeIs('counselor.notifications*') ? 'active' : '' }}">
+            <i class="bi bi-bell"></i> <span>Notifications</span>
+        </a>
+        <a href="{{ route('counselor.audit') }}" class="nav-link {{ request()->routeIs('counselor.audit*') ? 'active' : '' }}">
+            <i class="bi bi-shield-lock"></i> <span>Audit Logs</span>
+        </a>
+    </div>
+
+
+    <!-- Main Content -->
+    <div class="content" id="content">
+        @yield('content')
+    </div>
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        const sidebar = document.getElementById("sidebar");
-        const content = document.getElementById("content");
-        const toggleBtn = document.getElementById("sidebarToggle");
-
-        toggleBtn.addEventListener("click", () => {
+        document.getElementById('sidebarToggle').addEventListener('click', function () {
+            const sidebar = document.getElementById('sidebar');
+            const content = document.getElementById('content');
             if (window.innerWidth <= 768) {
-                sidebar.classList.toggle("active");
+                sidebar.classList.toggle('active');
             } else {
-                sidebar.classList.toggle("collapsed");
-                content.classList.toggle("expanded");
+                sidebar.classList.toggle('collapsed');
+                content.classList.toggle('expanded');
             }
         });
     </script>
-
-    @stack('scripts')
 </body>
 </html>

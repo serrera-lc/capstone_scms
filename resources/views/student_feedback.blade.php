@@ -1,203 +1,128 @@
-@extends('clean')
+<!-- resources/views/student_feedback.blade.php -->
+
+@extends('layouts')
 
 @section('content')
 <div class="container mt-4">
+    <div class="card shadow p-4">
+        <h4 class="text-center fw-bold">Lourdes College, Inc.</h4>
+        <p class="text-center mb-0">Higher Education Department</p>
+        <p class="text-center fw-bold">Guidance and Counseling Center</p>
+        <p class="text-center">SY 2022-2023 2ND SEMESTER Guidance and Counseling Evaluation</p>
 
-    {{-- Page Header --}}
-    <div class="d-flex justify-content-between align-items-center mb-4 p-3 bg-white rounded-3 shadow-sm header-card">
-        <h3 class="fw-bold mb-0" style="color: #1a73e8;">
-            <i class="bi bi-chat-left-text"></i> Student Feedback
-        </h3>
-        <a href="{{ route('student.dashboard') }}" 
-           class="btn btn-light border shadow-sm rounded-pill px-3 py-2 google-btn">
-            <i class="bi bi-arrow-left-circle"></i> Dashboard
-        </a>
-    </div>
+        <p class="mt-3">
+            The purpose of this tool is to evaluate the session you had with your counselor/advocate. 
+            This will be used as the basis for our improvement in the Guidance and Counseling Center. Thank you!
+        </p>
 
-    {{-- Success Message --}}
-    @if(session('success'))
-        <div class="alert alert-success alert-dismissible fade show shadow-sm rounded-3" role="alert">
-            <i class="bi bi-check-circle-fill me-2"></i>{{ session('success') }}
-            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-        </div>
-    @endif
-
-    {{-- Feedback Form --}}
-    <div class="card shadow-sm border-0 rounded-4 mb-4 google-card">
-        <div class="card-body p-4">
-            <form action="{{ route('student.feedback.store') }}" method="POST">
-                @csrf
-
-                {{-- Select Counselor --}}
-                <div class="mb-3">
-                    <label for="counselor_id" class="form-label fw-semibold text-muted">
-                        Counselor <span class="text-danger">*</span>
-                    </label>
-                    <select id="counselor_id" name="counselor_id" 
-                        class="form-select rounded-3 shadow-sm @error('counselor_id') is-invalid @enderror" required>
-                        <option value="">-- Select a Counselor --</option>
-                        @foreach($counselors as $counselor)
-                            <option value="{{ $counselor->id }}" {{ old('counselor_id') == $counselor->id ? 'selected' : '' }}>
-                                {{ $counselor->name }}
-                            </option>
-                        @endforeach
-                    </select>
-                    @error('counselor_id')
-                        <div class="invalid-feedback">{{ $message }}</div>
-                    @enderror
+        <!-- Student Information -->
+        <form method="POST" action="{{ route('feedback.store') }}">
+            @csrf
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <label class="form-label">Name:</label>
+                    <input type="text" name="name" class="form-control">
                 </div>
-
-                {{-- Feedback --}}
-                <div class="mb-3">
-                    <label for="feedback" class="form-label fw-semibold text-muted">
-                        Your Feedback <span class="text-danger">*</span>
-                    </label>
-                    <textarea id="feedback" name="feedback" rows="4" 
-                        class="form-control rounded-3 shadow-sm @error('feedback') is-invalid @enderror" 
-                        placeholder="Write your feedback here..." required>{{ old('feedback') }}</textarea>
-                    @error('feedback')
-                        <div class="invalid-feedback">{{ $message }}</div>
-                    @enderror
+                <div class="col-md-6">
+                    <label class="form-label">Course & Year Level:</label>
+                    <input type="text" name="course_year" class="form-control">
                 </div>
+            </div>
 
-                {{-- Rating --}}
-                <div class="mb-3">
-                    <label for="rating" class="form-label fw-semibold text-muted">
-                        Rate the Counselor <span class="text-danger">*</span>
-                    </label>
-                    <select id="rating" name="rating" 
-                        class="form-select rounded-3 shadow-sm @error('rating') is-invalid @enderror" required>
-                        <option value="">-- Select Rating --</option>
-                        @for ($i = 1; $i <= 5; $i++)
-                            <option value="{{ $i }}" {{ old('rating') == $i ? 'selected' : '' }}>
-                                {{ $i }} Star{{ $i > 1 ? 's' : '' }}
-                            </option>
+            <div class="mb-3">
+                <label class="form-label">Counselor’s Name:</label>
+                <input type="text" name="counselor" class="form-control">
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Purpose of Counseling:</label><br>
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="checkbox" name="purpose[]" value="Academic">
+                    <label class="form-check-label">Academic</label>
+                </div>
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="checkbox" name="purpose[]" value="Career">
+                    <label class="form-check-label">Career</label>
+                </div>
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="checkbox" name="purpose[]" value="Personal">
+                    <label class="form-check-label">Personal</label>
+                </div>
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="checkbox" name="purpose[]" value="Social">
+                    <label class="form-check-label">Social</label>
+                </div>
+            </div>
+
+            <!-- Part A: Likert Scale -->
+            <h6 class="fw-bold mt-4">PART A: Evaluate both the session and the counselor using the Likert scale</h6>
+            <p>5 = Strongly Agree | 4 = Agree | 3 = Disagree | 2 = Strongly Disagree | 1 = No Opinion/Not Applicable</p>
+
+            <table class="table table-bordered align-middle">
+                <thead class="table-light">
+                    <tr>
+                        <th>About the Counseling Session</th>
+                        <th class="text-center">5</th>
+                        <th class="text-center">4</th>
+                        <th class="text-center">3</th>
+                        <th class="text-center">2</th>
+                        <th class="text-center">1</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @php
+                        $questions = [
+                            'The session was helpful in accomplishing my immediate objective(s).',
+                            'All information was thoroughly and clearly explained.',
+                            'My questions were answered.',
+                            'The counselor was sensitive to deal with my concerns.',
+                            'The session will be valuable to me in completing my academic, career and/or personal goals.',
+                            'Demonstrated a genuine desire to help me and listened attentively.',
+                            'Was knowledgeable and prepared for the session.',
+                            'Made me feel comfortable and welcome.',
+                            'Helped me to examine my alternatives and encouraged me to ask questions.',
+                            'Used the counseling time efficiently.',
+                            'Demonstrated respect for individuality and sensitivity to diversity.',
+                            'I was made aware of the confidentiality clause as agreed on the informed consent.'
+                        ];
+                    @endphp
+
+                    @foreach($questions as $index => $question)
+                    <tr>
+                        <td>{{ $question }}</td>
+                        @for($i=5; $i>=1; $i--)
+                            <td class="text-center">
+                                <input type="radio" name="q{{ $index+1 }}" value="{{ $i }}">
+                            </td>
                         @endfor
-                    </select>
-                    @error('rating')
-                        <div class="invalid-feedback">{{ $message }}</div>
-                    @enderror
-                </div>
-
-                {{-- Submit --}}
-                <div class="text-end">
-                    <button type="submit" class="btn btn-primary rounded-pill shadow-sm px-4 google-primary-btn">
-                        <i class="bi bi-send-fill"></i> Submit Feedback
-                    </button>
-                </div>
-            </form>
-        </div>
-    </div>
-
-    {{-- Previous Feedback --}}
-    <div class="card shadow-sm border-0 rounded-4 google-card">
-        <div class="card-body p-4">
-            <h5 class="fw-bold mb-3" style="color: #1a73e8;">
-                📝 Previous Feedback
-            </h5>
-
-            @if($feedbacks->count() > 0)
-                <ul class="list-group list-group-flush">
-                    @foreach($feedbacks as $feedback)
-                        <li class="list-group-item d-flex justify-content-between align-items-start bg-light rounded-3 shadow-sm mb-2 p-3 google-feedback-item">
-                            <div>
-                                <strong class="fw-semibold" style="color: #202124;">
-                                    {{ $feedback->counselor->name ?? 'Counselor' }}
-                                </strong>
-                                <div class="text-warning mt-1" style="font-size: 1.1rem;">
-                                    @for ($i = 0; $i < $feedback->rating; $i++)
-                                        ★
-                                    @endfor
-                                    @for ($i = $feedback->rating; $i < 5; $i++)
-                                        ☆
-                                    @endfor
-                                </div>
-                                <p class="mb-1 text-muted fst-italic">"{{ $feedback->feedback }}"</p>
-                            </div>
-                            <small class="text-muted">
-                                {{ \Carbon\Carbon::parse($feedback->created_at)->format('M d, Y') }}
-                            </small>
-                        </li>
+                    </tr>
                     @endforeach
-                </ul>
-            @else
-                <p class="text-muted mb-0">No feedback submitted yet.</p>
-            @endif
-        </div>
+                </tbody>
+            </table>
+
+            <!-- Part B: Written Evaluation -->
+            <h6 class="fw-bold mt-4">PART B: Written Evaluation</h6>
+
+            <div class="mb-3">
+                <label class="form-label">1. What did you like about this counseling session?</label>
+                <textarea name="like" class="form-control" rows="3"></textarea>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">2. Comments/Suggestions to improve the session:</label>
+                <textarea name="suggestions" class="form-control" rows="3"></textarea>
+            </div>
+
+            <div class="text-end">
+                <button type="submit" class="btn btn-success px-4">Submit</button>
+            </div>
+        </form>
+
+        <hr>
+        <p class="text-muted small">
+            Reference: The form was adapted and modified from Foothill-De Anza Community College District. <br>
+            STRICTLY CONFIDENTIAL. All data is stored securely. Survey results will not contain any personally identifiable information.
+        </p>
     </div>
 </div>
-
-{{-- Google Classroom-Inspired Styling --}}
-<style>
-    body {
-        background-color: #f8f9fa;
-        font-family: 'Roboto', sans-serif;
-        color: #202124;
-    }
-
-    /* Header Card */
-    .header-card {
-        border: none;
-        box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
-    }
-
-    /* Google Card */
-    .google-card {
-        background-color: #fff;
-        border-radius: 14px;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-        transition: all 0.3s ease-in-out;
-    }
-
-    .google-card:hover {
-        transform: translateY(-3px);
-        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
-    }
-
-    /* Form Inputs */
-    .form-select, .form-control {
-        border: 1px solid #dadce0;
-        padding: 10px;
-        transition: all 0.2s ease;
-        background-color: #fff;
-    }
-
-    .form-select:focus, .form-control:focus {
-        border-color: #1a73e8;
-        box-shadow: 0 0 0 3px rgba(26, 115, 232, 0.25);
-    }
-
-    /* Primary Button */
-    .google-primary-btn {
-        background-color: #1a73e8 !important;
-        border-color: #1a73e8 !important;
-        font-weight: 500;
-        transition: all 0.2s;
-    }
-
-    .google-primary-btn:hover {
-        background-color: #1558c0 !important;
-        border-color: #1558c0 !important;
-        transform: scale(1.03);
-    }
-
-    /* Secondary Button */
-    .google-btn:hover {
-        background-color: #f1f3f4 !important;
-    }
-
-    /* Previous Feedback Styling */
-    .google-feedback-item {
-        transition: all 0.2s ease-in-out;
-    }
-
-    .google-feedback-item:hover {
-        background-color: #fefefe;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
-    }
-
-    textarea {
-        resize: none;
-    }
-</style>
 @endsection

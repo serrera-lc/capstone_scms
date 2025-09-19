@@ -3,310 +3,369 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>@yield('page-title', 'Dashboard') - SCMS</title>
+    <title>Counselor Dashboard - SCMS</title>
 
-    <!-- Bootstrap & Icons -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
 
-    <!-- DataTables CSS -->
-    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css">
-
     <style>
         body {
+            font-family: 'Segoe UI', sans-serif;
+            background: #fdfdfd;
+        }
+        /* Top Navbar */
+        .top-navbar {
+            background: #f8bbd0; /* light pink */
+            padding: 15px 25px;
             display: flex;
-            min-height: 100vh;
-            font-family: 'Google Sans', 'Segoe UI', sans-serif;
-            background: #f9f9fb;
+            justify-content: space-between;
+            align-items: center;
+            position: fixed;
+            top: 0; left: 0; right: 0;
+            box-shadow: 0 2px 8px rgba(0,0,0,.08);
+            z-index: 1000;
+            color: #880e4f;
+        }
+        .top-navbar h4 {
+            font-weight: 700;
+            color: #880e4f;
             margin: 0;
         }
 
         /* Sidebar */
         .sidebar {
             width: 240px;
-            background: #ffffff;
-            border-right: 1px solid #e5e7eb;
-            padding: 20px;
+            background: #fff;
+            padding: 20px 15px;
+            height: calc(100vh - 70px);
             position: fixed;
-            height: 100vh;
+            top: 70px; left: 0;
+            border-right: 1px solid #f8bbd0;
             display: flex;
             flex-direction: column;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            transition: .3s;
         }
-
         .sidebar h4 {
+            font-size: 18px;
             font-weight: 700;
+            margin-bottom: 25px;
+            color: #d63384;
             text-align: center;
-            color: #1a73e8;
-            margin-bottom: 30px;
-            letter-spacing: 1px;
         }
-
         .sidebar .nav-link {
-            color: #444;
-            margin-bottom: 10px;
-            padding: 12px 16px;
+            color: #555;
+            padding: 12px 15px;
             border-radius: 10px;
+            font-weight: 500;
             display: flex;
             align-items: center;
             gap: 10px;
-            font-weight: 500;
-            transition: all 0.3s ease;
+            transition: .3s;
+            margin-bottom: 10px;
         }
-
         .sidebar .nav-link:hover,
         .sidebar .nav-link.active {
-            background: #e8f0fe;
-            color: #1a73e8;
+            background-color: #f8bbd0;
+            color: #880e4f;
             font-weight: 600;
         }
-
-        .sidebar form button {
-            margin-top: auto;
-            background: #f8f9fa;
-            border: none;
-            color: #444;
-            font-weight: 600;
-            border-radius: 10px;
-            transition: background 0.2s ease;
-        }
-
-        .sidebar form button:hover {
-            background: #e8f0fe;
-            color: #1a73e8;
-        }
+        .sidebar.collapsed { width: 70px; overflow: hidden; }
+        .sidebar.collapsed h4,
+        .sidebar.collapsed .nav-link span { display: none; }
 
         /* Main Content */
         .content {
-            flex: 1;
             margin-left: 240px;
-            padding: 25px;
+            padding: 100px 25px 40px;
+            transition: margin-left .3s;
         }
+        .content.expanded { margin-left: 70px !important; }
 
-        /* Top Header */
-        .top-header {
-            background: #fff;
-            border-radius: 12px;
-            padding: 20px 25px;
-            margin-bottom: 30px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            box-shadow: 0 2px 12px rgba(0,0,0,0.08);
-        }
-
-        .top-header h3 {
-            font-weight: 700;
-            color: #202124;
-        }
-
-        .top-header span {
-            background: #1a73e8;
-            color: #fff;
-            padding: 8px 16px;
-            border-radius: 20px;
-            font-size: 14px;
-            font-weight: 500;
-        }
-
-        /* Stats Cards */
-        .card-stat {
-            border-radius: 16px;
-            padding: 18px;
-            color: #fff;
-            box-shadow: 0 4px 18px rgba(0,0,0,0.08);
-            transition: transform 0.2s ease;
-            text-align: center;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .card-stat:hover {
-            transform: translateY(-5px);
-        }
-
-        .card-stat i {
-            font-size: 2rem;
-            opacity: 0.2;
-            position: absolute;
-            bottom: 15px;
-            right: 15px;
-        }
-
-        .gradient-blue { background: linear-gradient(135deg, #4285f4, #1a73e8); }
-        .gradient-green { background: linear-gradient(135deg, #34a853, #0f9d58); }
-        .gradient-orange { background: linear-gradient(135deg, #fbbc05, #e67e22); }
-        .gradient-red { background: linear-gradient(135deg, #ea4335, #c5221f); }
-
-        .stat-value {
-            font-size: 2rem;
-            font-weight: 700;
-            margin-top: 5px;
-        }
-
-        /* Tables */
+        /* Card Styling */
         .card {
             border: none;
             border-radius: 16px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
-            margin-bottom: 25px;
         }
-
         .card-header {
             background: #fff;
-            font-weight: 700;
-            padding: 15px 20px;
-            border-bottom: 1px solid #e5e7eb;
-            font-size: 1rem;
-        }
-
-        table {
-            font-size: 14px;
-        }
-
-        .table thead th {
-            background: #f8f9fa;
+            border-bottom: 1px solid #f8bbd0;
             font-weight: 600;
-            color: #5f6368;
+            color: #d63384;
         }
-
-        .table tbody tr:hover {
-            background: #f1f3f4;
-            transition: 0.2s;
-        }
-
         .badge {
-            font-size: 0.85rem;
+            border-radius: 20px;
             padding: 6px 12px;
-            border-radius: 12px;
+            font-size: 13px;
+        }
+
+        @media (max-width: 768px) {
+            .sidebar { transform: translateX(-100%); }
+            .sidebar.active { transform: translateX(0); }
+            .content { margin-left: 0 !important; padding: 100px 15px; }
         }
     </style>
 </head>
 <body>
 
+    <!-- Top Navbar -->
+    <div class="top-navbar">
+        <button class="btn btn-light border rounded-circle me-3" id="sidebarToggle">
+            <i class="bi bi-list fs-4"></i>
+        </button>
+        <h4>Counselor Dashboard</h4>
+        <button type="button" class="btn btn-light border rounded-pill px-3 shadow-sm" data-bs-toggle="modal" data-bs-target="#logoutModal">
+            👋 Welcome, {{ auth()->user()->name }}
+        </button>
+    </div>
+
     <!-- Sidebar -->
-    <div class="sidebar d-flex flex-column">
+    <div class="sidebar" id="sidebar">
         <h4>SCMS</h4>
         <a href="{{ route('counselor.dashboard') }}" class="nav-link {{ request()->routeIs('counselor.dashboard') ? 'active' : '' }}">
-            <i class="bi bi-speedometer2"></i> Dashboard
+            <i class="bi bi-speedometer2"></i> <span>Dashboard</span>
         </a>
         <a href="{{ route('counselor.sessions') }}" class="nav-link {{ request()->routeIs('counselor.sessions*') ? 'active' : '' }}">
-            <i class="bi bi-journal-text"></i> Sessions
+            <i class="bi bi-chat-dots"></i> <span>Sessions</span>
         </a>
         <a href="{{ route('counselor.appointments') }}" class="nav-link {{ request()->routeIs('counselor.appointments*') ? 'active' : '' }}">
-            <i class="bi bi-calendar-check"></i> Appointments
+            <i class="bi bi-calendar-check"></i> <span>Appointments</span>
         </a>
-        <a href="{{ route('counselor.offenses') }}" class="nav-link {{ request()->routeIs('counselor.offenses') ? 'active' : '' }}">
-            <i class="bi bi-exclamation-triangle"></i> Offenses
+        <a href="{{ route('counselor.offenses') }}" class="nav-link {{ request()->routeIs('counselor.offenses*') ? 'active' : '' }}">
+            <i class="bi bi-exclamation-triangle"></i> <span>Offenses</span>
         </a>
-        <form action="{{ route('logout') }}" method="POST" class="mt-auto">
-            @csrf
-            <button class="btn w-100"><i class="bi bi-box-arrow-right"></i> Logout</button>
-        </form>
+        <a href="{{ route('counselor.reports') }}" class="nav-link {{ request()->routeIs('counselor.reports*') ? 'active' : '' }}">
+            <i class="bi bi-bar-chart"></i> <span>Reports</span>
+        </a>
+        <a href="{{ route('counselor.notifications') }}" class="nav-link {{ request()->routeIs('counselor.notifications*') ? 'active' : '' }}">
+            <i class="bi bi-bell"></i> <span>Notifications</span>
+        </a>
+        <a href="{{ route('counselor.audit') }}" class="nav-link {{ request()->routeIs('counselor.audit*') ? 'active' : '' }}">
+            <i class="bi bi-shield-lock"></i> <span>Audit Logs</span>
+        </a>
     </div>
 
     <!-- Main Content -->
-    <div class="content">
-        <div class="top-header">
-            <h3>@yield('page-title', 'Dashboard')</h3>
-            <span>👋 Welcome, {{ auth()->user()->name }}</span>
-        </div>
+    <div class="content" id="content">
+        <h3 class="fw-bold mb-4" style="color: #d63384;">Counselor Dashboard</h3>
 
-        <!-- Stats -->
-        <div class="row mb-4">
-            <div class="col-md-3 mb-3">
-                <div class="card-stat gradient-blue">
-                    <div>Upcoming Appointments</div>
-                    <div class="stat-value">{{ $upcomingAppointmentsCount }}</div>
-                    <i class="bi bi-calendar-event"></i>
+        <div class="row g-4">
+            <!-- Recent Sessions -->
+            <div class="col-md-6">
+                <div class="card shadow-sm border-0">
+                    <div class="card-header">
+                        <i class="bi bi-chat-dots"></i> Recent Sessions
+                    </div>
+                    <div class="card-body table-responsive">
+                        <table class="table table-hover align-middle">
+                            <thead>
+                                <tr>
+                                    <th>Student</th>
+                                    <th>Date</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @forelse($recentSessions as $session)
+                                    <tr>
+                                        <td>{{ $session->student?->name ?? 'No Student' }}</td>
+                                        <td>{{ \Carbon\Carbon::parse($session->date)->format('F d, Y') }}</td>
+                                        <td>
+                                            @if(\Carbon\Carbon::parse($session->date)->isPast())
+                                                <span class="badge bg-success">Done</span>
+                                            @else
+                                                <span class="badge bg-secondary">Upcoming</span>
+                                            @endif
+                                        </td>
+                                    </tr>
+                                @empty
+                                    <tr><td colspan="3" class="text-center">No recent sessions</td></tr>
+                                @endforelse
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
-            <div class="col-md-3 mb-3">
-                <div class="card-stat gradient-green">
-                    <div>Students Monitored</div>
-                    <div class="stat-value">{{ $studentsMonitoredCount }}</div>
-                    <i class="bi bi-people"></i>
-                </div>
-            </div>
-            <div class="col-md-3 mb-3">
-                <div class="card-stat gradient-orange">
-                    <div>Sessions Today</div>
-                    <div class="stat-value">{{ $sessionsTodayCount }}</div>
-                    <i class="bi bi-clock-history"></i>
-                </div>
-            </div>
-            <div class="col-md-3 mb-3">
-                <div class="card-stat gradient-red">
-                    <div>Completed Sessions</div>
-                    <div class="stat-value">{{ $completedSessionsCount }}</div>
-                    <i class="bi bi-check-circle"></i>
-                </div>
-            </div>
-        </div>
 
-        <!-- Recent Sessions -->
-        <div class="card shadow-sm border-0 rounded-4">
-            <div class="card-header"><i class="bi bi-journal-text"></i> Recent Sessions</div>
-            <div class="card-body table-responsive">
-                <table class="table table-hover align-middle">
-                    <thead>
-                        <tr>
-                            <th>Student</th>
-                            <th>Counselor</th>
-                            <th>Date</th>
-                            <th>Status</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach($recentSessions as $session)
-                            <tr>
-                                <td>{{ $session->student?->name ?? 'No Student' }}</td>
-                                <td>{{ $session->counselor?->name ?? 'No Counselor' }}</td>
-                                <td>{{ $session->date }}</td>
-                                <td>
-                                    <span class="badge bg-{{ $session->status === 'completed' ? 'success' : 'secondary' }}">
-                                        {{ ucfirst($session->status) }}
-                                    </span>
-                                </td>
-                            </tr>
-                        @endforeach
-                    </tbody>
-                </table>
+            <!-- Upcoming Appointments -->
+            <div class="col-md-6">
+                <div class="card shadow-sm border-0">
+                    <div class="card-header">
+                        <i class="bi bi-calendar-check"></i> Upcoming Appointments
+                    </div>
+                    <div class="card-body table-responsive">
+                        <table class="table table-hover align-middle">
+                            <thead>
+                                <tr>
+                                    <th>Student</th>
+                                    <th>Date</th>
+                                    <th>Time</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @forelse($appointments as $appointment)
+                                    <tr>
+                                        <td>{{ $appointment->student?->name ?? 'No Student' }}</td>
+                                        <td>{{ \Carbon\Carbon::parse($appointment->date)->format('F d, Y') }}</td>
+                                        <td>{{ \Carbon\Carbon::parse($appointment->time)->format('g:i A') }}</td>
+                                    </tr>
+                                @empty
+                                    <tr><td colspan="3" class="text-center">No appointments</td></tr>
+                                @endforelse
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
             </div>
-        </div>
 
-        <!-- Upcoming Appointments -->
-        <div class="card shadow-sm border-0 rounded-4">
-            <div class="card-header"><i class="bi bi-calendar-check"></i> Upcoming Appointments</div>
-            <div class="card-body table-responsive">
-                <table class="table table-hover align-middle">
-                    <thead>
-                        <tr>
-                            <th>Student</th>
-                            <th>Counselor</th>
-                            <th>Date</th>
-                            <th>Time</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach($appointments as $appointment)
-                            <tr>
-                                <td>{{ $appointment->student?->name ?? 'No Student' }}</td>
-                                <td>{{ $appointment->counselor?->name ?? 'No Counselor' }}</td>
-                                <td>{{ $appointment->date }}</td>
-                                <td>{{ $appointment->time }}</td>
-                            </tr>
-                        @endforeach
-                    </tbody>
-                </table>
+            <!-- Behavior & Offenses -->
+            <div class="col-md-6">
+                <div class="card shadow-sm border-0">
+                    <div class="card-header">
+                        <i class="bi bi-exclamation-triangle"></i> Behavior & Offenses
+                    </div>
+                    <div class="card-body">
+                        <ul class="list-group list-group-flush">
+                            @forelse($offenses as $offense)
+                                <li class="list-group-item">
+                                    <strong>{{ $offense->student?->name }}</strong> - {{ $offense->description }}
+                                    <span class="badge bg-danger float-end">{{ $offense->severity }}</span>
+                                </li>
+                            @empty
+                                <li class="list-group-item text-center">No offenses recorded</li>
+                            @endforelse
+                        </ul>
+                    </div>
+                </div>
             </div>
+
+            <!-- Reports & Analytics -->
+            <div class="col-md-6">
+                <div class="card shadow-sm border-0">
+                    <div class="card-header">
+                        <i class="bi bi-bar-chart"></i> Reports & Analytics
+                    </div>
+                    <div class="card-body">
+                        <p>Total Sessions: <span class="fw-bold">{{ $stats['total_sessions'] ?? 0 }}</span></p>
+                        <p>Total Appointments: <span class="fw-bold">{{ $stats['total_appointments'] ?? 0 }}</span></p>
+                        <p>Total Offenses: <span class="fw-bold">{{ $stats['total_offenses'] ?? 0 }}</span></p>
+                        <a href="{{ route('counselor.reports') }}" class="btn btn-sm btn-outline-primary">
+                            <i class="bi bi-download"></i> View Reports
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Notifications -->
+            <div class="col-md-6">
+                <div class="card shadow-sm border-0">
+                    <div class="card-header">
+                        <i class="bi bi-bell"></i> Notifications
+                    </div>
+                    <div class="card-body">
+                        <ul class="list-group list-group-flush">
+                            @forelse($notifications as $note)
+                                <li class="list-group-item">
+                                    {{ $note->message }}
+                                    <span class="text-muted small float-end">{{ $note->created_at->diffForHumans() }}</span>
+                                </li>
+                            @empty
+                                <li class="list-group-item text-center">No new notifications</li>
+                            @endforelse
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Audit Logs -->
+            <div class="col-md-6">
+                <div class="card shadow-sm border-0">
+                    <div class="card-header">
+                        <i class="bi bi-shield-lock"></i> Audit Logs
+                    </div>
+                    <div class="card-body table-responsive">
+                        <table class="table table-sm table-hover">
+                            <thead>
+                                <tr>
+                                    <th>User</th>
+                                    <th>Action</th>
+                                    <th>Date</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @forelse($auditLogs as $log)
+                                    <tr>
+                                        <td>{{ $log->user?->name }}</td>
+                                        <td>{{ $log->action }}</td>
+                                        <td>{{ $log->created_at->format('M d, Y g:i A') }}</td>
+                                    </tr>
+                                @empty
+                                    <tr><td colspan="3" class="text-center">No logs available</td></tr>
+                                @endforelse
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
         </div>
     </div>
 
-    <!-- Scripts -->
-    <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+      <!-- Logout Confirmation Modal -->
+<div class="modal fade" id="logoutModal" tabindex="-1" aria-labelledby="logoutModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content rounded-4 shadow-lg border-0">
+            
+            <!-- Modal Header -->
+            <div class="modal-header text-white rounded-top-4" style="background-color: #e83e8c;">
+                <h5 class="modal-title fw-bold" id="logoutModalLabel">
+                    Confirm Logout
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+
+            <!-- Modal Body -->
+            <div class="modal-body text-center py-4">
+                <p class="fs-5 mb-3">
+                    Are you sure you want to log out, 
+                    <strong>{{ auth()->user()->name }}</strong>?
+                </p>
+                <i class="bi bi-box-arrow-right" style="font-size: 3rem; color: #e83e8c;"></i>
+            </div>
+
+            <!-- Modal Footer -->
+            <div class="modal-footer d-flex justify-content-between">
+                <button type="button" class="btn btn-secondary px-4" data-bs-dismiss="modal">
+                    <i class="bi bi-x-circle"></i> Cancel
+                </button>
+                <form action="{{ route('logout') }}" method="POST" class="m-0">
+                    @csrf
+                    <button type="submit" class="btn px-4 text-white" style="background-color: #e83e8c;">
+                        <i class="bi bi-box-arrow-right"></i> Log Out
+                    </button>
+                </form>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+    <!-- Bootstrap & Sidebar Toggle Script -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
-    <script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
+    <script>
+        document.getElementById('sidebarToggle').addEventListener('click', function () {
+            const sidebar = document.getElementById('sidebar');
+            const content = document.getElementById('content');
+
+            if (window.innerWidth <= 768) {
+                // Mobile view
+                sidebar.classList.toggle('active');
+            } else {
+                // Desktop collapse
+                sidebar.classList.toggle('collapsed');
+                content.classList.toggle('expanded');
+            }
+        });
+    </script>
 </body>
 </html>
+

@@ -11,16 +11,26 @@ class CounselingSession extends Model
 
     protected $table = 'counseling_sessions'; // match migration name
 
-    protected $fillable = ['student_id','counselor_id','concern','notes','date'];
+    protected $fillable = [
+        'student_id',
+        'counselor_id',
+        'concern',
+        'notes',
+        'date',
+        'start_time',   // ✅ added
+        'end_time',     // ✅ added
+        'duration'      // ✅ added
+    ];
 
-    public function student() {
-    return $this->belongsTo(User::class, 'student_id');
-}
+    public function student()
+    {
+        return $this->belongsTo(User::class, 'student_id');
+    }
 
-public function counselor() {
-    return $this->belongsTo(User::class, 'counselor_id');
-}
-
+    public function counselor()
+    {
+        return $this->belongsTo(User::class, 'counselor_id');
+    }
 
     public function feedbacks()
     {

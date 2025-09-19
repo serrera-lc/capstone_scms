@@ -15,72 +15,82 @@
             justify-content: center;
             align-items: center;
             font-family: 'Segoe UI', sans-serif;
-            background-color: #f7f8fa;
+            background: linear-gradient(135deg, #fce4ec, #f8bbd0); /* soft pink gradient */
         }
 
         .login-card {
             width: 100%;
             max-width: 380px;
             padding: 2.5rem;
-            border-radius: 10px;
+            border-radius: 16px;
             background: #fff;
-            box-shadow: 0 4px 18px rgba(0, 0, 0, 0.15);
+            box-shadow: 0 6px 22px rgba(0, 0, 0, 0.15);
             text-align: center;
+            transition: all 0.3s ease-in-out;
+        }
+
+        .login-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
         }
 
         .login-card img {
-            width: 80px;
-            margin-bottom: 10px;
+            width: 90px;
+            margin-bottom: 12px;
+            border-radius: 50%;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.15);
         }
 
         .login-card h4 {
             font-weight: 600;
             margin-bottom: 8px;
-            color: #202124;
+            color: #ad1457; /* darker pink */
         }
 
         .login-subtitle {
             font-size: 14px;
-            color: #5f6368;
+            color: #6d6d6d;
             margin-bottom: 20px;
         }
 
         .form-label {
             font-weight: 500;
             font-size: 14px;
-            color: #202124;
+            color: #ad1457;
         }
 
         .form-control {
-            border-radius: 6px;
+            border-radius: 8px;
             height: 42px;
             padding: 10px;
             font-size: 14px;
+            border: 1px solid #f48fb1;
+        }
+
+        .form-control:focus {
+            border-color: #ec407a;
+            box-shadow: 0 0 0 2px rgba(236, 64, 122, 0.2);
         }
 
         .input-group-text {
             background: transparent;
             border-left: none;
             cursor: pointer;
-            color: #5f6368;
-        }
-
-        .input-group:focus-within {
-            box-shadow: 0 0 0 2px #1a73e8;
-            border-radius: 6px;
+            color: #ad1457;
         }
 
         .btn-login {
             font-weight: 600;
-            border-radius: 6px;
-            background-color: #1a73e8;
+            border-radius: 8px;
+            background-color: #ec407a; /* main pink button */
             color: white;
             height: 45px;
             transition: background-color 0.3s;
+            border: none;
         }
 
         .btn-login:hover {
-            background-color: #1669c1;
+            background-color: #d81b60; /* darker hover */
         }
 
         .alert {
@@ -96,11 +106,10 @@
 
         .footer-text a {
             text-decoration: none;
-            color: #1a73e8;
+            color: #ec407a;
             font-weight: 500;
         }
 
-        /* Smooth icon transition */
         .bi {
             transition: all 0.2s ease-in-out;
         }
@@ -108,75 +117,73 @@
 </head>
 <body>
 
-    <div class="login-card">
-        <!-- Google-style Logo -->
-        <img src="https://www.gstatic.com/images/branding/product/1x/avatar_circle_blue_120dp.png" alt="Logo">
+  <div class="login-card">
+    <!-- School Logo -->
+    <img src="{{ asset('images/lcguidancelogo.jpg') }}" alt="LCSHS Logo">
 
-        <h4>Sign in</h4>
-        <p class="login-subtitle">Use your LCSHS-SCMS account</p>
+    <h4>Sign in</h4>
+    <p class="login-subtitle">Use your LCSHS-SCMS account</p>
 
-        {{-- Validation / Login Errors --}}
-        @if ($errors->any())
-            <div class="alert alert-danger text-start">
-                <ul class="mb-0">
-                    @foreach ($errors->all() as $error)
-                        <li>{{ $error }}</li>
-                    @endforeach
-                </ul>
+    {{-- Validation / Login Errors --}}
+    @if ($errors->any())
+        <div class="alert alert-danger text-start">
+            <ul class="mb-0">
+                @foreach ($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                @endforeach
+            </ul>
+        </div>
+    @endif
+
+    <form method="POST" action="{{ url('/login') }}">
+        @csrf
+
+        <div class="mb-3 text-start">
+            <label for="email" class="form-label">Email</label>
+            <input type="email" name="email" id="email" value="{{ old('email') }}"
+                class="form-control @error('email') is-invalid @enderror"
+                required autofocus autocomplete="email">
+            @error('email')
+                <div class="invalid-feedback">{{ $message }}</div>
+            @enderror
+        </div>
+
+        <div class="mb-3 text-start">
+            <label for="password" class="form-label">Password</label>
+            <div class="input-group">
+                <input type="password" name="password" id="password"
+                    class="form-control @error('password') is-invalid @enderror"
+                    required autocomplete="current-password">
+                <span class="input-group-text" id="togglePassword">
+                    <i class="bi bi-eye-slash"></i>
+                </span>
             </div>
-        @endif
+            @error('password')
+                <div class="invalid-feedback d-block">{{ $message }}</div>
+            @enderror
+        </div>
 
-        <form method="POST" action="{{ url('/login') }}">
-            @csrf
+        <button type="submit" class="btn btn-login w-100">Login</button>
+    </form>
+  </div>
 
-            <div class="mb-3 text-start">
-                <label for="email" class="form-label">Email</label>
-                <input type="email" name="email" id="email" value="{{ old('email') }}"
-                    class="form-control @error('email') is-invalid @enderror"
-                    required autofocus autocomplete="email">
-                @error('email')
-                    <div class="invalid-feedback">{{ $message }}</div>
-                @enderror
-            </div>
+  <script>
+    // Password visibility toggle
+    document.getElementById("togglePassword").addEventListener("click", function() {
+        const passwordInput = document.getElementById("password");
+        const icon = this.querySelector("i");
 
-            <div class="mb-3 text-start">
-                <label for="password" class="form-label">Password</label>
-                <div class="input-group">
-                    <input type="password" name="password" id="password"
-                        class="form-control @error('password') is-invalid @enderror"
-                        required autocomplete="current-password">
-                    <span class="input-group-text" id="togglePassword">
-                        <i class="bi bi-eye-slash"></i>
-                    </span>
-                </div>
-                @error('password')
-                    <div class="invalid-feedback d-block">{{ $message }}</div>
-                @enderror
-            </div>
-
-            <button type="submit" class="btn btn-login w-100">Login</button>
-        </form>
-
-        
-    </div>
-
-    <script>
-        // Password visibility toggle
-        document.getElementById("togglePassword").addEventListener("click", function() {
-            const passwordInput = document.getElementById("password");
-            const icon = this.querySelector("i");
-
-            if (passwordInput.type === "password") {
-                passwordInput.type = "text";
-                icon.classList.remove("bi-eye-slash");
-                icon.classList.add("bi-eye");
-            } else {
-                passwordInput.type = "password";
-                icon.classList.remove("bi-eye");
-                icon.classList.add("bi-eye-slash");
-            }
-        });
-    </script>
+        if (passwordInput.type === "password") {
+            passwordInput.type = "text";
+            icon.classList.remove("bi-eye-slash");
+            icon.classList.add("bi-eye");
+        } else {
+            passwordInput.type = "password";
+            icon.classList.remove("bi-eye");
+            icon.classList.add("bi-eye-slash");
+        }
+    });
+  </script>
 
 </body>
 </html>

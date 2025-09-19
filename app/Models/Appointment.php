@@ -9,14 +9,20 @@ class Appointment extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['student_id','counselor_id','date','time','status'];
+    protected $fillable = [
+        'student_id',
+        'counselor_id',
+        'date',
+        'time',
+        'reason',   // ✅ Add this
+        'status',
+    ];
 
     public function student() {
-    return $this->belongsTo(User::class, 'student_id');
-}
+        return $this->belongsTo(User::class, 'student_id');
+    }
 
-public function counselor() {
-    return $this->belongsTo(User::class, 'counselor_id');
-}
-
+    public function counselor() {
+        return $this->belongsTo(User::class, 'counselor_id');
+    }
 }
